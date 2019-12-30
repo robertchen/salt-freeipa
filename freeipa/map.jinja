@@ -1,0 +1,51 @@
+{%- load_yaml as client_defaults %}
+pkgs:
+- ipa-client
+mkhomedir: true
+dns:
+  updates: true
+ldap_conf: /etc/openldap/ldap.conf
+sssd_conf: /etc/sssd/sssd.conf
+krb5_conf: /etc/krb5.conf
+{%- endload %}
+
+{%- set client = salt['grains.filter_by'](client_defaults, merge=salt['pillar.get']('freeipa:client')) %}
+
+{%- load_yaml as server_defaults %}
+pkgs:
+- ipa-server
+- ipa-server-dns
+named_service: named-pkcs11
+ldap_conf: /etc/openldap/ldap.conf
+sssd_conf: /etc/sssd/sssd.conf
+named_conf: /etc/named.conf
+{%- endload %}
+
+{%- set server = salt['grains.filter_by'](server_defaults, merge=salt['pillar.get']('freeipa:server')) %}
+
+{# Get list of all ipa servers #}
+{%- if pillar.freeipa.client is defined %}
+  {%- if client.servers is defined %}
+    {%- set ipa_servers = client.servers %}
+  {%- else %}
+    {%- set ipa_servers = [client.server] %}
+  {%- endif %}
+
+  {%- if client.hostname is defined %}
+    {%- set ipa_host = client.hostname %}
+  {%- else %}
+    {%- set ipa_host = grains['fqdn'] %}
+  {%- endif %}
+{%- endif %}
+
+{%- if pillar.freeipa.server is defined %}
+  {%- if server.servers is defined %}
+    {%- set ipa_servers = server.servers %}
+  {%- else %}
+    {%- if server.hostname is defined %}
+      {%- set ipa_servers = [server.hostname] %}
+    {%- else %}
+      {%- set ipa_servers = [grains['fqdn']] %}
+    {%- endif %}
+  {%- endif %}
+{%- endif %}
