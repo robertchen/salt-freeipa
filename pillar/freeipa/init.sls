@@ -1,11 +1,11 @@
 freeipa:
   server:
-    realm: IPA.PAYMENUTS.IO
-    domain: ipa.paymentus.io
+    realm: IPA.test.IO
+    domain: ipa.test.io
     principal_user: admin
     admin:
       password: secretpassword
     servers:
-    - freeipatesting1.paymentus.io
-    - freeipatesting2.paymentus.io
+    - freeipatesting1.test.io
+    - freeipatesting2.test.io
     
